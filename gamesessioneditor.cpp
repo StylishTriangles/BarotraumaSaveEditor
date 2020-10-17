@@ -1,8 +1,15 @@
 #include "gamesessioneditor.h"
+#include <QErrorMessage>
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QDir>
 #include <QLabel>
+
+#include <stdexcept>
+
+#include <saveutil.h>
+
+const QString GameSessionEditor::workspacePath = "workspace";
 
 GameSessionEditor::GameSessionEditor(QWidget *parent) : QWidget(parent)
 {
@@ -10,7 +17,7 @@ GameSessionEditor::GameSessionEditor(QWidget *parent) : QWidget(parent)
 }
 
 void GameSessionEditor::on_saveButton_clicked() {
-//    saveGame();
+    saveFile();
 }
 
 void GameSessionEditor::openFile() {
@@ -22,16 +29,29 @@ void GameSessionEditor::openFile() {
             "Daedalic Entertainment GmbH" + separator +
             "Barotrauma";
 
-    QString filename = QFileDialog::getOpenFileName(
+    QString filePath = QFileDialog::getOpenFileName(
                 this,
                 tr("Open Saved Game"),
                 save_directory,
                 tr("Savegame files (*.save)")
     );
-    QLabel* labelFilename = findChild<QLabel*>("label_filename");
-    if (filename != "") {
-        labelFilename->setText(filename);
-    } else {
-        labelFilename->setText(tr("No file chosen"));
+    if (filePath == "")
+        return;
+    // extract save file to workspace
+    try {
+        SaveUtil::decompressToDirectory(filePath, workspacePath);
+    } catch (std::runtime_error const& e){
+        QErrorMessage em(this);
+        em.showMessage(e.what());
+        em.exec();
+        return;
     }
+    // save the edited file path on success
+    openedFilePath = filePath;
+    QLabel* labelFilename = findChild<QLabel*>("label_filename");
+    labelFilename->setText(filePath);
+}
+
+void GameSessionEditor::saveFile() {
+
 }

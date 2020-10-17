@@ -19,7 +19,8 @@ public slots:
     void saveFile();
 
 private:
-    QString savedGamePath;
+    static const QString workspacePath;
+    QString openedFilePath; // path to the file being edited
 };
 
 #endif // GAMESESSIONEDITOR_H
