@@ -26,7 +26,7 @@ CONFIG += c++17
 
 INCLUDEPATH += vendor
 
-QMAKE_CXXFLAGS += -O3
+QMAKE_CXXFLAGS_RELEASE += -O3
 
 SOURCES += \
         main.cpp \
