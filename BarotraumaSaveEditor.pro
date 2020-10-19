@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -32,7 +32,8 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     gamesessioneditor.cpp \
-    saveutil.cpp
+    saveutil.cpp \
+    gamesession.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +41,9 @@ HEADERS += \
     saveutil.h \
     vendor/gzip-cpp/decompress.hpp \
     vendor/gzip-cpp/config.hpp \
-    vendor/gzip-cpp/compress.hpp
+    vendor/gzip-cpp/compress.hpp \
+    fileutils.h \
+    gamesession.h
 
 FORMS += \
         mainwindow.ui
@@ -51,3 +54,6 @@ LIBS += -lz
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    icons.qrc

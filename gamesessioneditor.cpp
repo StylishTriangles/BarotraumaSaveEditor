@@ -1,9 +1,11 @@
 #include "gamesessioneditor.h"
+#include <QDebug>
 #include <QDir>
 #include <QErrorMessage>
 #include <QFileDialog>
 #include <QLabel>
 #include <QListWidget>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QStandardPaths>
 #include <QTabWidget>
@@ -21,12 +23,21 @@ GameSessionEditor::GameSessionEditor(QWidget *parent) : QWidget(parent)
 // Populate forms with extracted data
 // Data should be located in directory dir
 void GameSessionEditor::processSessionFiles(QString const& dir) {
-    return;
-}
-
-// saves changes made in editor to directory dir
-void GameSessionEditor::saveWorkspace(QString const& dir) {
-    // unimplemented
+    QDir sessionDir(dir);
+    QStringList subNames;
+    bool gameSessionFound = false;
+    for (QString const& str: sessionDir.entryList(QDir::Files)) {
+         QFileInfo fileInfo(dir + QDir::separator() + str);
+         if (fileInfo.fileName() == "gamesession.xml") {
+             gameSessionFound = true;
+             bool success = gameSession.fromXML(fileInfo.absoluteFilePath());
+             if (!success)
+                 qDebug() << "Error processing gamesession.xml";
+         }
+    }
+    if (!gameSessionFound) {
+        displayError("Could not find gamesession.xml in workspace");
+    }
 }
 
 void GameSessionEditor::enableAllChildWidgets() {
@@ -59,17 +70,23 @@ void GameSessionEditor::on_addSubButton_clicked() {
     QString subFileName = subFileInfo.fileName();
     QString subFileExt = subFileInfo.suffix();
     QString dest = workspacePath + QDir::separator() + subFileName;
-    if (QFile::exists(dest)) {
+    QListWidget* availableSubsList = findChild<QListWidget*>("availableSubsList");
+    QString subName(std::move(subFileName));
+    subName.chop(subFileExt.size()+1); // remove extension and dot
+    if (QFile::exists(dest) || !availableSubsList->findItems(subName, Qt::MatchExactly).empty()) {
         displayError(tr("Submarine with this name already exists in current game session"));
         return;
     }
+    // copy submarine to workspace
     subFile.copy(dest);
-    QString subName(std::move(subFileName));
-    subName.chop(subFileExt.size());
     // add sub to available list
-    findChild<QListWidget*>("availableSubsList")->addItem("subName");
+    availableSubsList->addItem(subName);
     // add sub to XML tree
-    /// unimplemented
+    try {
+        gameSession.addSubmarine(subName, true, false);
+    } catch (std::runtime_error const& e) {
+        displayError(e.what());
+    }
 }
 
 void GameSessionEditor::openFile() {
@@ -111,8 +128,8 @@ void GameSessionEditor::openFile() {
 }
 
 void GameSessionEditor::saveFile() {
-    // write changes made in editor
-    saveWorkspace(workspacePath);
+    // write changes made to session in editor
+    gameSession.dumpXML();
 
     // compress directory and overwrite opened savegame
     try {
@@ -123,4 +140,9 @@ void GameSessionEditor::saveFile() {
         em.exec();
         return;
     }
+    QMessageBox::information(
+                this,
+                tr("Save successful"),
+                tr("The game session was saved succesfully!")
+    );
 }

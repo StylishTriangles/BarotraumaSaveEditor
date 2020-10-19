@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <gamesession.h>
+
 class GameSessionEditor : public QWidget
 {
     Q_OBJECT
@@ -11,7 +13,6 @@ public:
 
 private:
     void processSessionFiles(QString const& dir);
-    void saveWorkspace(QString const& dir);
     void enableAllChildWidgets();
     void displayError(QString const& message);
 
@@ -28,6 +29,7 @@ public slots:
 private:
     static const QString workspacePath;
     QString openedFilePath; // path to the file being edited
+    GameSession gameSession;
 };
 
 #endif // GAMESESSIONEDITOR_H
