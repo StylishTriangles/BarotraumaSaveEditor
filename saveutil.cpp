@@ -1,5 +1,7 @@
 #include "saveutil.h"
 
+#include <cstring>
+
 #include <QByteArray>
 #include <QDir>
 
@@ -20,6 +22,30 @@ char16_t SaveUtil::toChar16(const char* bytes, size_t offset) {
                 (static_cast<unsigned char>(bytes[offset+1]) << 8) |
                 (static_cast<unsigned char>(bytes[offset]))
     );
+}
+
+// Write int32 to bytes buffer starting at offset
+void SaveUtil::int32ToBuffer(int32_t in, char* buffer, size_t offset) {
+    memcpy(buffer + offset, &in, sizeof(int32_t));
+}
+
+// Write char16 to bytes buffer starting at offset
+void SaveUtil::char16ToBuffer(char16_t in, char* buffer, size_t offset) {
+    memcpy(buffer + offset, &in, sizeof(char16_t));
+}
+
+// Append int32 to bytes buffer
+void SaveUtil::appendInt32(int32_t in, QByteArray& buffer) {
+    char conversionBuffer[sizeof(int32_t)];
+    int32ToBuffer(in, conversionBuffer, 0);
+    buffer.append(conversionBuffer, sizeof(int32_t));
+}
+
+// Append char16 to bytes buffer
+void SaveUtil::appendChar16(char16_t in, QByteArray& buffer) {
+    char conversionBuffer[sizeof(char16_t)];
+    char16ToBuffer(in, conversionBuffer, 0);
+    buffer.append(conversionBuffer, sizeof(char16_t));
 }
 
 // check if there is enough data in the buffer
@@ -108,6 +134,60 @@ bool SaveUtil::extractFile(const QString& dir, const char* data, size_t& offset,
  * @param inDirPath: directory to compress
  * @param outFilePath: where the file should be written
  */
-void compressDirectory(QString const& inDirPath, QString const& outFilePath) {
+void SaveUtil::compressDirectory(QString const& inDirPath, QString const& outFilePath) {
+    QDir inDir(inDirPath);
+    QFileInfoList inFiles = inDir.entryInfoList(QDir::Files);
+    if (inFiles.empty())
+        throw std::runtime_error(("Could not compress directory \"" + inDirPath + "\" - directory is empty").toStdString());
+    QFile outFile(outFilePath);
+    outFile.open(QFile::Truncate | QFile::WriteOnly);
+    QByteArray buffer;
+    buffer.reserve(10000000); // 1MB should cover small save files
+    for (QFileInfo const& inFileInfo: inFiles) {
+        compressFile(inFileInfo.absoluteFilePath(), buffer);
+    }
+    std::string compressedData = gzip::compress(buffer.data(), static_cast<size_t>(buffer.size()));
+    outFile.write(compressedData.data(), static_cast<qint64>(compressedData.size()));
+//    outFile.write(buffer.data(), buffer.size());
+}
 
+void SaveUtil::compressFile(QString const& inFilePath, QByteArray& buffer) {
+    QFile inFile(inFilePath);
+    QFileInfo inFileInfo(inFile);
+    if (!inFile.open(QFile::ReadOnly)) {
+        throw std::runtime_error(("Could not open file \"" + inFilePath + "\" for reading. Save aborted!").toStdString());
+    }
+
+    //// write file name
+    std::u16string fileName = inFileInfo.fileName().toStdU16String();
+    int32_t nameLen = static_cast<int32_t>(fileName.length());
+    // write file name length
+    appendInt32(nameLen, buffer);
+    // write file name characters
+    for (unsigned i = 0; i < fileName.size(); i++) {
+        appendChar16(fileName[i], buffer);
+    }
+
+    //// write file contents
+    int32_t contentLen = static_cast<int32_t>(inFileInfo.size());
+    // write file content length
+    appendInt32(contentLen, buffer);
+    buffer.append(inFile.readAll());
+}
+
+// Create backup of a provided file by appending .bakx to its name, "x" is an incrementing integer
+bool SaveUtil::backupFile(QString const& filePath, unsigned backups_limit) {
+    QFile sourceFile(filePath);
+    if (!sourceFile.exists())
+        return false;
+
+    // enumerate nearest available backup
+    QString backupExt = ".bak";
+    for (unsigned i = 1;; i++) {
+        if (i > backups_limit) // limit spam
+            return false;
+        QString fullExt = backupExt + QString::number(i);
+        if (!QFile::exists(filePath+fullExt))
+            return sourceFile.rename(sourceFile.fileName() + fullExt);
+    }
 }
