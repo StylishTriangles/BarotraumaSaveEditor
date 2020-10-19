@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/formIcons">
+        <file>icons/arrow-right.png</file>
+        <file>icons/arrow-right-hover.png</file>
+        <file>icons/arrow-right-pressed.png</file>
+    </qresource>
+</RCC>

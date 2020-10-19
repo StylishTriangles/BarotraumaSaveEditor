@@ -9,10 +9,17 @@ class GameSessionEditor : public QWidget
 public:
     explicit GameSessionEditor(QWidget *parent = nullptr);
 
+private:
+    void processSessionFiles(QString const& dir);
+    void saveWorkspace(QString const& dir);
+    void enableAllChildWidgets();
+    void displayError(QString const& message);
+
 signals:
 
 private slots:
     void on_saveButton_clicked();
+    void on_addSubButton_clicked();
 
 public slots:
     void openFile();
