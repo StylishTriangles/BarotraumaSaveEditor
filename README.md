@@ -1,2 +1,22 @@
 # BarotraumaSaveEditor
 Save editor for Barotrauma video game
+
+## Features
+- Add submarines to existing game saves
+
+## Upcoming features
+- Take ownership of available submarines
+- Remove submarines from game saves
+- Change game metadata (like money)
+- Change crew stats
+
+## Download
+- Download the latest realease from [releases/latest](https://github.com/StylishTriangles/BarotraumaSaveEditor/releases/latest).
+- Unzip into location of your choice
+
+## Usage
+- Run BarotraumaSaveEditor.exe
+- Open _savename_.save you wish to edit
+- Make changes using the editor
+- Click the save button
+- Done!

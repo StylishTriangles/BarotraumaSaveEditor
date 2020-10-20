@@ -24,9 +24,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++17
 
-INCLUDEPATH += vendor
+QMAKE_LFLAGS_RELEASE += -static
 
-QMAKE_CXXFLAGS_RELEASE += -O3
+INCLUDEPATH += vendor
 
 SOURCES += \
         main.cpp \
