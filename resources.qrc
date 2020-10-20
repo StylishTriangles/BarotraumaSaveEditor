@@ -4,4 +4,7 @@
         <file>icons/arrow-right-hover.png</file>
         <file>icons/arrow-right-pressed.png</file>
     </qresource>
+    <qresource lang="css" prefix="/style">
+        <file>stylesheet.css</file>
+    </qresource>
 </RCC>

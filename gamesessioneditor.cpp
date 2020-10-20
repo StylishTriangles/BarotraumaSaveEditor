@@ -122,9 +122,9 @@ void GameSessionEditor::openFile() {
     QLabel* labelFilename = findChild<QLabel*>("label_filename");
     labelFilename->setText(filePath);
 
-    // enable editing of UI form
-    enableAllChildWidgets(); // enable widgets inside QTabWidget
-    findChild<QPushButton*>("saveButton")->setEnabled(true);
+    // inform other widgets that the session was successfully loaded
+    // so that they can be enabled for editing
+    emit sessionLoaded(true);
 }
 
 void GameSessionEditor::saveFile() {

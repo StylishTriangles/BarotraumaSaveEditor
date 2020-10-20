@@ -17,6 +17,7 @@ private:
     void displayError(QString const& message);
 
 signals:
+    void sessionLoaded(bool);
 
 private slots:
     void on_saveButton_clicked();
