@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->editorWidget, SIGNAL(sessionLoaded(bool)), ui->subTab, SLOT(setEnabled(bool)));
-    connect(ui->editorWidget, SIGNAL(sessionLoaded(bool)), ui->saveButton, SLOT(setEnabled(bool)));
+    connect(ui->editorWidget, SIGNAL(sessionLoaded(bool)), ui->actionSave, SLOT(setEnabled(bool)));
 }
 
 MainWindow::~MainWindow()

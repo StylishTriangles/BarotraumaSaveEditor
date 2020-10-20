@@ -38,6 +38,11 @@ void GameSessionEditor::processSessionFiles(QString const& dir) {
     if (!gameSessionFound) {
         displayError("Could not find gamesession.xml in workspace");
     }
+    // list available submarines
+    QListWidget* availableSubsList = findChild<QListWidget*>("availableSubsList");
+    QListWidget* ownedSubsList = findChild<QListWidget*>("ownedSubsList");
+    availableSubsList->addItems(gameSession.getSubmarines(GameSession::AvailableSubmarine));
+    ownedSubsList->addItems(gameSession.getSubmarines(GameSession::OwnedSubmarine));
 }
 
 void GameSessionEditor::enableAllChildWidgets() {
@@ -61,7 +66,7 @@ void GameSessionEditor::on_addSubButton_clicked() {
                 this,
                 tr("Add submarine file"),
                 ".",
-                tr("Submarine Files (*.sub)")
+                tr("Submarine File (*.sub)")
     );
     if (subPath == "")
         return;
@@ -83,15 +88,25 @@ void GameSessionEditor::on_addSubButton_clicked() {
     availableSubsList->addItem(subName);
     // add sub to XML tree
     try {
-        gameSession.addSubmarine(subName, true, false);
+        gameSession.addSubmarine(subName, GameSession::AvailableSubmarine);
     } catch (std::runtime_error const& e) {
         displayError(e.what());
     }
 }
 
 void GameSessionEditor::openFile() {
+    if (!openedFilePath.isEmpty()) {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Loading another save file will discard your changes."));
+        msgBox.setInformativeText(tr("Do you want to proceed?"));
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        int ret = msgBox.exec();
+        if (ret != QMessageBox::Yes)
+            return;
+    }
     QChar separator = QDir::separator();
-    // save directory, taken from:
+    // save location, taken from:
     // https://github.com/Regalis11/Barotrauma/blob/0002ad2c501a1a8df323b52edfc82a78d0afc6bc/Barotrauma/BarotraumaShared/SharedSource/Utils/SaveUtil.cs#L29
     QString save_directory =
             QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first() + separator +
@@ -102,7 +117,7 @@ void GameSessionEditor::openFile() {
                 this,
                 tr("Open Saved Game"),
                 save_directory,
-                tr("Savegame files (*.save)")
+                tr("Savegame file (*.save)")
     );
     if (filePath == "")
         return;
@@ -111,6 +126,8 @@ void GameSessionEditor::openFile() {
         SaveUtil::decompressToDirectory(filePath, workspacePath);
     } catch (std::runtime_error const& e){
         displayError(e.what());
+        emit sessionLoaded(false);
+        openedFilePath = QString();
         return;
     }
 
