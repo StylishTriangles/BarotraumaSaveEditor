@@ -74,7 +74,17 @@ void SaveUtil::decompressToDirectory(QString const& filePath, QString const& des
     outDir.mkpath(".");
 
     size_t progress = 0; // offset from the beginning of file
-    while (extractFile(destDirPath, data.c_str(), progress, data.size())) {}
+    bool moreData = true; // true if more files could be extracted
+    int index = 1; // index of file being processed
+    while (moreData) {
+        try {
+            moreData = extractFile(destDirPath, data.c_str(), progress, data.size());
+        } catch(std::runtime_error const& e) {
+            QString errorMsg = QString("File ID: %1 processing error: ").arg(index);
+            throw std::runtime_error((errorMsg+e.what()).toStdString());
+        }
+        index++;
+    }
 }
 
 /* @param dir: directory where the file should be extracted
