@@ -19,6 +19,7 @@ private:
     void processSessionFiles(QString const& dir);
     void enableAllChildWidgets();
     void displayError(QString const& message);
+    bool removeFromWorkspace(QString const& fileName);
 
 signals:
     void sessionLoaded(bool);

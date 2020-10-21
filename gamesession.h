@@ -18,6 +18,9 @@ public:
     void dumpXML(QString const& xmlPath);
     bool fromXML(QString const& xmlPath);
     void addSubmarine(QString const& name, SubmarineType type);
+    bool removeSubmarine(QString const& name, SubmarineType type);
+    bool containsSubmarine(QString const& name);
+    QString getCurrentSubmarine();
     QStringList getSubmarines(SubmarineType type) const;
 
 private:

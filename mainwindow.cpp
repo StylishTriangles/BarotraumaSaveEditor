@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     gse = new GameSessionEditor(ui->centralWidget);
+    this->setCentralWidget(gse);
+//    gse->setFocus();
     QFile styleSheet(":/style/stylesheet.css");
     if (styleSheet.open(QFile::ReadOnly))
         this->setStyleSheet(styleSheet.readAll());

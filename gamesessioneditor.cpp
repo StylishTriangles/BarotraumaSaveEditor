@@ -16,6 +16,7 @@
 #include <saveutil.h>
 
 const QString GameSessionEditor::workspacePath = "workspace";
+static const QString subExt = ".sub";
 
 GameSessionEditor::GameSessionEditor(QWidget *parent) :
     QWidget(parent),
@@ -60,6 +61,14 @@ void GameSessionEditor::displayError(QString const& message) {
     em.exec();
 }
 
+/* Remove file present in workspace directory
+ * @param fileName: Name of the file to remove
+ * @returns bool: true on success
+ */
+bool GameSessionEditor::removeFromWorkspace(const QString &fileName) {
+    return QFile::remove(workspacePath + QDir::separator() + fileName);
+}
+
 void GameSessionEditor::on_addSubButton_clicked() {
     QString subPath = QFileDialog::getOpenFileName(
                 this,
@@ -94,6 +103,28 @@ void GameSessionEditor::on_addSubButton_clicked() {
 }
 
 void GameSessionEditor::on_removeAvailableSubsButton_clicked() {
+    QList<QListWidgetItem*> selectedItems = ui->availableSubsList->selectedItems();
+
+    // no action when there is nothing to remove
+    if (selectedItems.isEmpty())
+        return;
+
+    // confirm removal
+    int choice = QMessageBox::question(
+                this,
+                tr("Selected submarines will become unavailable for purchase"),
+                tr("This will NOT remove the submarines you already own. Do you want to proceed?")
+    );
+    if (choice != QMessageBox::Yes)
+        return;
+
+    // remove selected subs
+    for (QListWidgetItem* pItem: selectedItems) {
+        gameSession.removeSubmarine(pItem->text(), GameSession::AvailableSubmarine);
+        if (!gameSession.containsSubmarine(pItem->text()))
+            removeFromWorkspace(pItem->text() + subExt);
+    }
+
 }
 
 void GameSessionEditor::openFile() {

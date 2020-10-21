@@ -7,6 +7,7 @@
 
 static const QString availableSubsTagName = "AvailableSubs";
 static const QString ownedSubsTagName = "ownedsubmarines";
+static const QString gameSessionTagName = "Gamesession";
 
 GameSession::GameSession(QString const& xmlPath)
 {
@@ -54,6 +55,57 @@ void GameSession::addSubmarine(const QString &name, SubmarineType type) {
     QDomNode subNode = xmlTree.createElement("sub");
     nodeList.at(0).appendChild(subNode);
     subNode.toElement().setAttribute("name", name);
+}
+
+/*
+ * @returns: true when submarine was removed successfully
+ */
+bool GameSession::removeSubmarine(const QString &name, SubmarineType type) {
+    QDomNodeList nodeList;
+    if (type == AvailableSubmarine)
+        nodeList = xmlTree.elementsByTagName(availableSubsTagName);
+    else
+        nodeList = xmlTree.elementsByTagName(ownedSubsTagName);
+    if (nodeList.isEmpty())
+        return false;
+    QDomNodeList subsList = nodeList.at(0).childNodes();
+    for (int i = 0; i < subsList.size(); i++) {
+        QDomNode subNode = subsList.item(i);
+        QDomElement subElem = subNode.toElement();
+        if (subElem.attribute("name") == name) {
+            nodeList.at(0).removeChild(subNode);
+            return true;
+        }
+    }
+    return false;
+}
+
+/* Check if game session contains submarine with name "name"
+ * More specifically, if a tag "sub" with attribute name=[name] exists
+ * or submarine is the one currently in use
+ * @returns: true when submarine is found in game session
+ */
+bool GameSession::containsSubmarine(const QString &name) {
+    // currently used submarine is the one searched
+    if (getCurrentSubmarine() == name)
+        return true;
+    QDomNodeList subNodes = xmlTree.elementsByTagName("sub");
+    for (int i = 0; i < subNodes.size(); i++) {
+        QDomElement e = subNodes.item(i).toElement();
+        if (e.attribute("name") == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * @returns: The submarine currently in use
+ */
+QString GameSession::getCurrentSubmarine() {
+    QDomNodeList nodeList = xmlTree.elementsByTagName(gameSessionTagName);
+    QDomElement gsElem = nodeList.at(0).toElement();
+    return gsElem.attribute("submarine");
 }
 
 // Get a list of submarines that match the specified type
