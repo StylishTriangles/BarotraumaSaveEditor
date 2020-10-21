@@ -120,11 +120,46 @@ void GameSessionEditor::on_removeAvailableSubsButton_clicked() {
 
     // remove selected subs
     for (QListWidgetItem* pItem: selectedItems) {
+        // remove from game session
         gameSession.removeSubmarine(pItem->text(), GameSession::AvailableSubmarine);
+        // conditionally remove .sub file from workspace
         if (!gameSession.containsSubmarine(pItem->text()))
             removeFromWorkspace(pItem->text() + subExt);
+        // remove from GUI
+        delete pItem;
     }
 
+}
+
+void GameSessionEditor::on_transferSubsButton_clicked()
+{
+    QList<QListWidgetItem*> selectedItems = ui->availableSubsList->selectedItems();
+
+    // no action when there is nothing to move
+    if (selectedItems.isEmpty()) {
+        QMessageBox::information(
+                    this,
+                    tr("You selected nothing"),
+                    tr("Try selecting something next time")
+        );
+        return;
+    }
+    bool hadDuplicates = false;
+    for (QListWidgetItem* pItem: selectedItems) {
+        bool success = gameSession.addSubmarine(pItem->text(), GameSession::OwnedSubmarine);
+        if (success)
+            ui->ownedSubsList->addItem(pItem->text());
+        else
+            hadDuplicates = true;
+    }
+    if (hadDuplicates) {
+        QMessageBox::warning(
+                    this,
+                    tr("Partial transfer"),
+                    tr("Some submarines could not be transfered, "
+                       "because thay are already marked as owned")
+        );
+    }
 }
 
 void GameSessionEditor::openFile() {
@@ -196,3 +231,4 @@ void GameSessionEditor::saveFile() {
                 tr("The game session was saved succesfully!")
     );
 }
+

@@ -27,6 +27,7 @@ signals:
 private slots:
     void on_addSubButton_clicked();
     void on_removeAvailableSubsButton_clicked();
+    void on_transferSubsButton_clicked();
 
 public slots:
     void openFile();

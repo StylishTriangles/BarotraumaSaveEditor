@@ -38,7 +38,9 @@ bool GameSession::fromXML(const QString &xmlPath) {
  * @param name: Submarine name (without .sub)
  * @param type: Submarine type
  */
-void GameSession::addSubmarine(const QString &name, SubmarineType type) {
+bool GameSession::addSubmarine(const QString &name, SubmarineType type) {
+    if (containsSubmarine(name, type))
+        return false;
     QDomNodeList nodeList;
     if (type == AvailableSubmarine)
         nodeList = xmlTree.elementsByTagName(availableSubsTagName);
@@ -55,6 +57,7 @@ void GameSession::addSubmarine(const QString &name, SubmarineType type) {
     QDomNode subNode = xmlTree.createElement("sub");
     nodeList.at(0).appendChild(subNode);
     subNode.toElement().setAttribute("name", name);
+    return true;
 }
 
 /*
@@ -97,6 +100,13 @@ bool GameSession::containsSubmarine(const QString &name) {
         }
     }
     return false;
+}
+
+/* Check if game session contains submarine with specified name and type
+ */
+bool GameSession::containsSubmarine(QString const& name, SubmarineType type) {
+    QStringList subNames = getSubmarines(type);
+    return subNames.contains(name);
 }
 
 /*
