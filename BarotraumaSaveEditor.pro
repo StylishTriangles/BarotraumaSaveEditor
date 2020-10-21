@@ -46,7 +46,8 @@ HEADERS += \
     gamesession.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    gamesessioneditor.ui
 
 LIBS += -lz
 

@@ -1,5 +1,10 @@
-QListWidgetItem {
-    border: 1px solid darkgray;
-    margin-top: 2px;
-    margin-bottom: 2px;
+QListWidget::item {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: -1px
 }
+
+QListWidget::item:!hover:!selected {
+    border-bottom: 1px solid grey;
+}
+

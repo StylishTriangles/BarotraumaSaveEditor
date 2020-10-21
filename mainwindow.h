@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include <gamesessioneditor.h>
+
 namespace Ui {
 class MainWindow;
 }
@@ -17,6 +19,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    GameSessionEditor *gse;
 };
 
 #endif // MAINWINDOW_H

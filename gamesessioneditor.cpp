@@ -1,4 +1,5 @@
 #include "gamesessioneditor.h"
+#include "ui_gamesessioneditor.h"
 #include <QDebug>
 #include <QDir>
 #include <QErrorMessage>
@@ -16,8 +17,12 @@
 
 const QString GameSessionEditor::workspacePath = "workspace";
 
-GameSessionEditor::GameSessionEditor(QWidget *parent) : QWidget(parent)
+GameSessionEditor::GameSessionEditor(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::GameSessionEditor)
 {
+    ui->setupUi(this);
+    connect(this, SIGNAL(sessionLoaded(bool)), ui->subTab, SLOT(setEnabled(bool)));
 }
 
 // Populate forms with extracted data
@@ -39,10 +44,8 @@ void GameSessionEditor::processSessionFiles(QString const& dir) {
         displayError("Could not find gamesession.xml in workspace");
     }
     // list available submarines
-    QListWidget* availableSubsList = findChild<QListWidget*>("availableSubsList");
-    QListWidget* ownedSubsList = findChild<QListWidget*>("ownedSubsList");
-    availableSubsList->addItems(gameSession.getSubmarines(GameSession::AvailableSubmarine));
-    ownedSubsList->addItems(gameSession.getSubmarines(GameSession::OwnedSubmarine));
+    ui->availableSubsList->addItems(gameSession.getSubmarines(GameSession::AvailableSubmarine));
+    ui->ownedSubsList->addItems(gameSession.getSubmarines(GameSession::OwnedSubmarine));
 }
 
 void GameSessionEditor::enableAllChildWidgets() {
@@ -57,15 +60,11 @@ void GameSessionEditor::displayError(QString const& message) {
     em.exec();
 }
 
-void GameSessionEditor::on_saveButton_clicked() {
-    saveFile();
-}
-
 void GameSessionEditor::on_addSubButton_clicked() {
     QString subPath = QFileDialog::getOpenFileName(
                 this,
                 tr("Add submarine file"),
-                ".",
+                "",
                 tr("Submarine File (*.sub)")
     );
     if (subPath == "")
@@ -75,7 +74,7 @@ void GameSessionEditor::on_addSubButton_clicked() {
     QString subFileName = subFileInfo.fileName();
     QString subFileExt = subFileInfo.suffix();
     QString dest = workspacePath + QDir::separator() + subFileName;
-    QListWidget* availableSubsList = findChild<QListWidget*>("availableSubsList");
+    QListWidget* availableSubsList = ui->availableSubsList;
     QString subName(std::move(subFileName));
     subName.chop(subFileExt.size()+1); // remove extension and dot
     if (QFile::exists(dest) || !availableSubsList->findItems(subName, Qt::MatchExactly).empty()) {
@@ -92,6 +91,9 @@ void GameSessionEditor::on_addSubButton_clicked() {
     } catch (std::runtime_error const& e) {
         displayError(e.what());
     }
+}
+
+void GameSessionEditor::on_removeAvailableSubsButton_clicked() {
 }
 
 void GameSessionEditor::openFile() {
