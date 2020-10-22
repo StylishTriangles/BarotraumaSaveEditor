@@ -3,11 +3,11 @@ Save editor for Barotrauma video game
 
 ## Features
 - Add submarines to existing game saves
-
-## Upcoming features
 - Take ownership of available submarines
 - Remove submarines from game saves
-- Change game metadata (like money)
+
+## Upcoming features
+- Change other settings (like money)
 - Change crew stats
 
 ## Download
