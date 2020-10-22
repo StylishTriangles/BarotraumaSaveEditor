@@ -24,6 +24,7 @@ GameSessionEditor::GameSessionEditor(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(this, SIGNAL(sessionLoaded(bool)), ui->subTab, SLOT(setEnabled(bool)));
+//    connect(this, SIGNAL(sessionLoaded(bool)), ui->generalTab, SLOT(setEnabled(bool)));
 }
 
 // Populate forms with extracted data

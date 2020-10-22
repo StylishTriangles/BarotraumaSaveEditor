@@ -29,9 +29,8 @@ private slots:
     void on_removeAvailableSubsButton_clicked();
     void on_removeOwnedSubsButton_clicked();
     void on_transferSubsButton_clicked();
-    void resetUI();
-
     void on_availableSubsList_itemSelectionChanged();
+    void resetUI();
 
 public slots:
     void openFile();
