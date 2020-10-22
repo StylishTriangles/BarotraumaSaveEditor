@@ -90,7 +90,7 @@ bool GameSession::removeSubmarine(const QString &name, SubmarineType type) {
  */
 bool GameSession::containsSubmarine(const QString &name) {
     // currently used submarine is the one searched
-    if (getCurrentSubmarine() == name)
+    if (currentSubmarine() == name)
         return true;
     QDomNodeList subNodes = xmlTree.elementsByTagName("sub");
     for (int i = 0; i < subNodes.size(); i++) {
@@ -112,7 +112,7 @@ bool GameSession::containsSubmarine(QString const& name, SubmarineType type) {
 /*
  * @returns: The submarine currently in use
  */
-QString GameSession::getCurrentSubmarine() {
+QString GameSession::currentSubmarine() {
     QDomNodeList nodeList = xmlTree.elementsByTagName(gameSessionTagName);
     QDomElement gsElem = nodeList.at(0).toElement();
     return gsElem.attribute("submarine");

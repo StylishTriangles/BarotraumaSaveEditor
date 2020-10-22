@@ -112,8 +112,8 @@ void GameSessionEditor::on_removeAvailableSubsButton_clicked() {
     // confirm removal
     int choice = QMessageBox::question(
                 this,
-                tr("Selected submarines will become unavailable for purchase"),
-                tr("This will NOT remove the submarines you already own. Do you want to proceed?")
+                tr("Selected submarine(s) will become unavailable for purchase"),
+                tr("This will NOT remove the submarine(s) you already own. Do you want to proceed?")
     );
     if (choice != QMessageBox::Yes)
         return;
@@ -128,7 +128,53 @@ void GameSessionEditor::on_removeAvailableSubsButton_clicked() {
         // remove from GUI
         delete pItem;
     }
+}
 
+
+void GameSessionEditor::on_removeOwnedSubsButton_clicked()
+{
+    QList<QListWidgetItem*> selectedItems = ui->ownedSubsList->selectedItems();
+
+    // no action when there is nothing to remove
+    if (selectedItems.isEmpty())
+        return;
+
+    // confirm removal
+    QMessageBox confirmationMessage(this);
+    confirmationMessage.setWindowTitle(tr("Selected submarine(s) will be removed from saved game"));
+    confirmationMessage.setText(
+                tr("This will most likely delete all contents of the submarine(s) "
+                "and reset them to default.\n"
+                "Do you want to proceed?")
+    );
+    confirmationMessage.setDetailedText(
+                tr("If you want to make sure that submarine is deleted/reset, you also need to remove it from "
+                   "\"Available submarines list\" and unset it as the current submarine (if it's currently in use)."));
+    confirmationMessage.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    confirmationMessage.setDefaultButton(QMessageBox::No);
+    int choice = confirmationMessage.exec();
+    if (choice != QMessageBox::Yes)
+        return;
+
+    // remove selected subs
+    for (QListWidgetItem* pItem: selectedItems) {
+        // Cancel removal if this is the currently used submarine
+        if (gameSession.currentSubmarine() == pItem->text()) {
+            displayError(
+                        QString("Submarine \"%1\" could not be removed, because it is currently in use")
+                        .arg(pItem->text())
+            );
+        } else {
+            // remove from game session
+            gameSession.removeSubmarine(pItem->text(), GameSession::OwnedSubmarine);
+            // conditionally remove .sub file from workspace
+            if (!gameSession.containsSubmarine(pItem->text()))
+                removeFromWorkspace(pItem->text() + subExt);
+            // remove from GUI
+            delete pItem;
+        }
+
+    }
 }
 
 void GameSessionEditor::on_transferSubsButton_clicked()
@@ -160,6 +206,12 @@ void GameSessionEditor::on_transferSubsButton_clicked()
                        "because thay are already marked as owned")
         );
     }
+}
+
+void GameSessionEditor::resetUI() {
+    ui->availableSubsList->clear();
+    ui->ownedSubsList->clear();
+    ui->label_filename->setText(tr("No file"));
 }
 
 void GameSessionEditor::openFile() {
@@ -199,6 +251,9 @@ void GameSessionEditor::openFile() {
         return;
     }
 
+    // make sure UI is clean
+    resetUI();
+
     // process extracted data
     processSessionFiles(workspacePath);
 
@@ -232,3 +287,7 @@ void GameSessionEditor::saveFile() {
     );
 }
 
+void GameSessionEditor::on_availableSubsList_itemSelectionChanged()
+{
+//    ui->selectedSubCount->display(ui->availableSubsList->selectedItems().count());
+}

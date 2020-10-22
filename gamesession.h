@@ -21,7 +21,7 @@ public:
     bool removeSubmarine(QString const& name, SubmarineType type);
     bool containsSubmarine(QString const& name);
     bool containsSubmarine(QString const& name, SubmarineType type);
-    QString getCurrentSubmarine();
+    QString currentSubmarine();
     QStringList getSubmarines(SubmarineType type) const;
 
 private:

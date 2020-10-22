@@ -27,7 +27,11 @@ signals:
 private slots:
     void on_addSubButton_clicked();
     void on_removeAvailableSubsButton_clicked();
+    void on_removeOwnedSubsButton_clicked();
     void on_transferSubsButton_clicked();
+    void resetUI();
+
+    void on_availableSubsList_itemSelectionChanged();
 
 public slots:
     void openFile();
