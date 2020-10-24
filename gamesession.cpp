@@ -105,7 +105,7 @@ bool GameSession::containsSubmarine(const QString &name) {
 /* Check if game session contains submarine with specified name and type
  */
 bool GameSession::containsSubmarine(QString const& name, SubmarineType type) {
-    QStringList subNames = getSubmarines(type);
+    QStringList subNames = submarinesList(type);
     return subNames.contains(name);
 }
 
@@ -120,7 +120,7 @@ QString GameSession::currentSubmarine() {
 
 // Get a list of submarines that match the specified type
 // @returns: A list of submarine names
-QStringList GameSession::getSubmarines(SubmarineType type) const{
+QStringList GameSession::submarinesList(SubmarineType type) const{
     QDomNodeList nodeList;
     QStringList names;
     if (type == AvailableSubmarine)

@@ -46,8 +46,8 @@ void GameSessionEditor::processSessionFiles(QString const& dir) {
         displayError("Could not find gamesession.xml in workspace");
     }
     // list available submarines
-    ui->availableSubsList->addItems(gameSession.getSubmarines(GameSession::AvailableSubmarine));
-    ui->ownedSubsList->addItems(gameSession.getSubmarines(GameSession::OwnedSubmarine));
+    ui->availableSubsList->addItems(gameSession.submarinesList(GameSession::AvailableSubmarine));
+    ui->ownedSubsList->addItems(gameSession.submarinesList(GameSession::OwnedSubmarine));
 }
 
 void GameSessionEditor::enableAllChildWidgets() {

@@ -22,7 +22,7 @@ public:
     bool containsSubmarine(QString const& name);
     bool containsSubmarine(QString const& name, SubmarineType type);
     QString currentSubmarine();
-    QStringList getSubmarines(SubmarineType type) const;
+    QStringList submarinesList(SubmarineType type) const;
 
 private:
     QString xmlPath;
