@@ -290,5 +290,5 @@ void GameSessionEditor::saveFile() {
 
 void GameSessionEditor::on_availableSubsList_itemSelectionChanged()
 {
-//    ui->selectedSubCount->display(ui->availableSubsList->selectedItems().count());
+    ui->selectedSubCount->display(ui->availableSubsList->selectedItems().count());
 }
