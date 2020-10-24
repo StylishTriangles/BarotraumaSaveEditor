@@ -9,6 +9,18 @@ static const QString availableSubsTagName = "AvailableSubs";
 static const QString ownedSubsTagName = "ownedsubmarines";
 static const QString gameSessionTagName = "Gamesession";
 
+// from
+// https://github.com/Regalis11/Barotrauma/blob/4978af3d602730de2e2742af8541ef43b227efe9/Barotrauma/BarotraumaShared/SharedSource/GameSession/GameModes/GameModePreset.cs#L11
+static const QStringList gameModes{
+    "SinglePlayerCampaign",
+    "MultiPlayerCampaign",
+    "Tutorial",
+    "Mission",
+    "TestMode",
+    "Sandbox",
+    "DevSandbox"
+};
+
 GameSession::GameSession(QString const& xmlPath)
 {
     fromXML(xmlPath);
@@ -141,4 +153,26 @@ QStringList GameSession::submarinesList(SubmarineType type) const{
         }
     }
     return names;
+}
+
+qint64 GameSession::getMoney() {
+    for (QString const& mode: gameModes) {
+        QDomNodeList nodeList = xmlTree.elementsByTagName(mode);
+        if (nodeList.size() != 0) {
+            return nodeList.at(0).toElement().attribute("money").toLongLong();
+        }
+    }
+    return 0;
+}
+
+bool GameSession::setMoney(qint64 amount) {
+    for (QString const& mode: gameModes) {
+        QDomNodeList nodeList = xmlTree.elementsByTagName(mode);
+        if (nodeList.size() != 0) {
+            QDomElement elem = nodeList.at(0).toElement();
+            elem.setAttribute("money", amount);
+            return true;
+        }
+    }
+    return false;
 }

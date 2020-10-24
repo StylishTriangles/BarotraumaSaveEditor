@@ -24,7 +24,7 @@ GameSessionEditor::GameSessionEditor(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(this, SIGNAL(sessionLoaded(bool)), ui->subTab, SLOT(setEnabled(bool)));
-//    connect(this, SIGNAL(sessionLoaded(bool)), ui->generalTab, SLOT(setEnabled(bool)));
+    connect(this, SIGNAL(sessionLoaded(bool)), ui->generalTab, SLOT(setEnabled(bool)));
 }
 
 // Populate forms with extracted data
@@ -48,6 +48,9 @@ void GameSessionEditor::processSessionFiles(QString const& dir) {
     // list available submarines
     ui->availableSubsList->addItems(gameSession.submarinesList(GameSession::AvailableSubmarine));
     ui->ownedSubsList->addItems(gameSession.submarinesList(GameSession::OwnedSubmarine));
+
+    // general info updates
+    ui->moneyEdit->setText(QString::number(gameSession.getMoney()));
 }
 
 void GameSessionEditor::enableAllChildWidgets() {
@@ -291,4 +294,11 @@ void GameSessionEditor::saveFile() {
 void GameSessionEditor::on_availableSubsList_itemSelectionChanged()
 {
     ui->selectedSubCount->display(ui->availableSubsList->selectedItems().count());
+}
+
+void GameSessionEditor::on_moneyEdit_textEdited(const QString &arg1)
+{
+    qlonglong val = arg1.toLongLong();
+    gameSession.setMoney(val);
+    ui->moneyEdit->setText(QString::number(val));
 }

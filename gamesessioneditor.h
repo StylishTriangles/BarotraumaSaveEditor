@@ -32,6 +32,8 @@ private slots:
     void on_availableSubsList_itemSelectionChanged();
     void resetUI();
 
+    void on_moneyEdit_textEdited(const QString &arg1);
+
 public slots:
     void openFile();
     void saveFile();
