@@ -15,9 +15,9 @@ Save editor for Barotrauma video game
 - Unzip into location of your choice
 
 ## Usage
-- Run BarotraumaSaveEditor.exe
-- __IMPORTANT!__ Backup your save
-- Open _savename_.save you wish to edit
-- Make changes using the editor
-- Click the save button
-- Done!
+1. Run BarotraumaSaveEditor.exe
+2. __IMPORTANT!__ Backup your save
+3. Open _savename_.save you wish to edit
+4. Make changes using the editor
+5. Click the save button
+6. Done!
